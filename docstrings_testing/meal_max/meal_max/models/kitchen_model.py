@@ -37,10 +37,12 @@ class Meal:
     Attributes:
         id (int): identifier for the meal.
         meal (str): Name of the meal.
-        cuisine (str): Type of cuisine the meal belongs to.
-        price (float): Price of the meal (must be positive).
-        difficulty (str): Difficulty level of preparation 
-            (must be 'LOW', 'MED', or 'HIGH').
+        cuisine (str): Type of cuisine (e.g., "Turkish", "Japanese").
+        price (float): Price of the meal 
+        difficulty (str): Preparation difficulty (must be 'LOW', 'MED', or 'HIGH').
+
+    Raises:
+        ValueError: If price is negative or difficulty is not one of the allowed values.
     """
     id: int
     meal: str
