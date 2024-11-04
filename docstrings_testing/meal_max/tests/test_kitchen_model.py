@@ -1,5 +1,5 @@
 import pytest
-from meal_max.models.meal import Meal, create_meal, get_meal_by_id, get_meal_by_name, delete_meal, update_meal_stats, get_leaderboard
+from meal_max.models.kitchen_model import Meal, create_meal, get_meal_by_id, get_meal_by_name, delete_meal, update_meal_stats, get_leaderboard
 
 @pytest.fixture
 def sample_meal1():
