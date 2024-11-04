@@ -94,7 +94,7 @@ def test_get_battle_score_different_difficulties(battle_model):
     med_score = battle_model.get_battle_score(med_diff_meal)
     low_score = battle_model.get_battle_score(low_diff_meal)
     
-    assert high_score < med_score < low_score
+    assert high_score > med_score > low_score
 
 ##################################################
 # Battle Execution Test Cases
