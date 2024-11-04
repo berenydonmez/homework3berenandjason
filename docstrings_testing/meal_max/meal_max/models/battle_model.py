@@ -140,7 +140,7 @@ class BattleModel:
             combatant_data (Meal): The Meal object to be added as a combatant.
 
         Raises:
-            ValueErrorL If there are already two combatants.
+            ValueError: If there are already two combatants.
         """
         if len(self.combatants) >= 2:
             logger.error("Attempted to add combatant '%s' but combatants list is full", combatant_data.meal)
