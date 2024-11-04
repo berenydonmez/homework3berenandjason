@@ -1,3 +1,4 @@
+import os
 from contextlib import contextmanager
 import re
 import sqlite3
@@ -12,7 +13,8 @@ from meal_max.models.kitchen_model import (
     get_meal_by_name, 
     delete_meal, 
     update_meal_stats, 
-    get_leaderboard
+    get_leaderboard,
+    clear_meals
 )
 
 from meal_max.utils.sql_utils import get_db_connection
@@ -94,6 +96,10 @@ def test_create_duplicate_meal(mock_cursor):
     with pytest.raises(ValueError, match="Meal with name 'Manti' already exists"):
         create_meal("Manti", "Turkish", 12.99, "MED")
 
+##################################################
+# Clear Meals Test Case
+##################################################
+ 
 ##################################################
 # Meal Retrieval Test Cases
 ##################################################
