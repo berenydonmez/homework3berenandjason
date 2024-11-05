@@ -100,29 +100,57 @@ def test_create_duplicate_meal(mock_cursor):
 # Clear Meals Test Cases
 ##################################################
 
-def test_clear_meals(mock_cursor, sample_meal1):
+def test_clear_meals(mock_cursor, mocker):
     """Test clearing all meals from the database."""
-    create_meal(sample_meal1.meal, sample_meal1.cuisine, 
-                sample_meal1.price, sample_meal1.difficulty)
+    mock_create_table_script = """
+    DROP TABLE IF EXISTS meals;
+    CREATE TABLE meals (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        cuisine TEXT NOT NULL,
+        price REAL NOT NULL,
+        difficulty TEXT NOT NULL,
+        deleted BOOLEAN DEFAULT FALSE,
+        battles INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0
+    );
+    """
+    
+    mock_file = mocker.mock_open(read_data=mock_create_table_script)
+    mocker.patch("builtins.open", mock_file)
     
     clear_meals()
     
-    mock_cursor.execute.assert_called_with("SELECT COUNT(*) FROM meals")
-    mock_cursor.fetchone.return_value = (0,)
-    assert mock_cursor.fetchone()[0] == 0, "Database should be empty after clearing"
+    mock_cursor.executescript.assert_called_once_with(mock_create_table_script)
+    assert mock_cursor.connection.commit.call_count == 1
 
-def test_clear_meals_empty_database(mock_cursor, caplog):
-    """Test clearing meals when database is already empty."""
-    mock_cursor.execute.return_value = None
-    mock_cursor.fetchone.return_value = (0,)
+def test_clear_meals_empty_database(mock_cursor, mocker, caplog):
+    """Test clearing meals when database is empty."""
+    mock_create_table_script = """
+    DROP TABLE IF EXISTS meals;
+    CREATE TABLE meals (
+        id INTEGER PRIMARY KEY,
+        name TEXT NOT NULL UNIQUE,
+        cuisine TEXT NOT NULL,
+        price REAL NOT NULL,
+        difficulty TEXT NOT NULL,
+        deleted BOOLEAN DEFAULT FALSE,
+        battles INTEGER DEFAULT 0,
+        wins INTEGER DEFAULT 0
+    );
+    """
+    
+    mock_file = mocker.mock_open(read_data=mock_create_table_script)
+    mocker.patch("builtins.open", mock_file)
+    
+    mock_cursor.fetchall.return_value = []
     
     clear_meals()
     
-    assert "No meals found to clear" in caplog.text, "Expected warning when clearing empty database"
-    
-    mock_cursor.execute.assert_called_with("SELECT COUNT(*) FROM meals")
-    assert mock_cursor.fetchone()[0] == 0, "Database should still be empty"
-    
+    mock_cursor.executescript.assert_called_once_with(mock_create_table_script)
+    assert mock_cursor.connection.commit.call_count == 1
+    assert "No meals found to clear" in caplog.text
+
 ##################################################
 # Meal Retrieval Test Cases
 ##################################################
