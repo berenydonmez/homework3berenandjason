@@ -22,7 +22,7 @@ def test_get_random(mock_random_org):
     result = get_random()
 
     # Assert that the result is the mocked random number
-    assert result == RANDOM_NUMBER, f"Expected random number {RANDOM_NUMBER}, but got {result}"
+    assert result == RANDOM_NUMBER
 
     # Ensure that the correct URL was called
     requests.get.assert_called_once_with('https://www.random.org/decimal-fractions/?num=1&dec=2&col=1&format=plain&rnd=new', timeout=5)
