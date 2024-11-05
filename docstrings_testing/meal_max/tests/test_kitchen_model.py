@@ -97,9 +97,32 @@ def test_create_duplicate_meal(mock_cursor):
         create_meal("Manti", "Turkish", 12.99, "MED")
 
 ##################################################
-# Clear Meals Test Case
+# Clear Meals Test Cases
 ##################################################
- 
+
+def test_clear_meals(mock_cursor, sample_meal1):
+    """Test clearing all meals from the database."""
+    create_meal(sample_meal1.meal, sample_meal1.cuisine, 
+                sample_meal1.price, sample_meal1.difficulty)
+    
+    clear_meals()
+    
+    mock_cursor.execute.assert_called_with("SELECT COUNT(*) FROM meals")
+    mock_cursor.fetchone.return_value = (0,)
+    assert mock_cursor.fetchone()[0] == 0, "Database should be empty after clearing"
+
+def test_clear_meals_empty_database(mock_cursor, caplog):
+    """Test clearing meals when database is already empty."""
+    mock_cursor.execute.return_value = None
+    mock_cursor.fetchone.return_value = (0,)
+    
+    clear_meals()
+    
+    assert "No meals found to clear" in caplog.text, "Expected warning when clearing empty database"
+    
+    mock_cursor.execute.assert_called_with("SELECT COUNT(*) FROM meals")
+    assert mock_cursor.fetchone()[0] == 0, "Database should still be empty"
+    
 ##################################################
 # Meal Retrieval Test Cases
 ##################################################
