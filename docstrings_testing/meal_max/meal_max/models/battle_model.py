@@ -152,17 +152,3 @@ class BattleModel:
 
         # Log the current state of combatants
         logger.info("Current combatants list: %s", [combatant.meal for combatant in self.combatants])
-
-    def test_prep_combatant_state(battle_model, sample_meal1, sample_meal2):
-        """Test that combatants list is correctly updated after adding combatants."""
-    
-        # Add the first combatant and verify the list contains only sample_meal1
-        battle_model.prep_combatant(sample_meal1)
-        assert len(battle_model.combatants) == 1
-        assert battle_model.combatants[0].meal == sample_meal1.meal
-
-        # Add the second combatant and verify the list now contains both sample_meal1 and sample_meal2
-        battle_model.prep_combatant(sample_meal2)
-        assert len(battle_model.combatants) == 2
-        assert battle_model.combatants[0].meal == sample_meal1.meal
-        assert battle_model.combatants[1].meal == sample_meal2.meal
