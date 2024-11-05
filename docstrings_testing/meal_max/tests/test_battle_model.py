@@ -56,7 +56,7 @@ def test_prep_combatant_full_list(battle_model, sample_meal1, sample_meal2):
     battle_model.prep_combatant(sample_meal2)
     
     extra_meal = Meal(id=3, meal="Extra", cuisine="Test", price=10.0, difficulty="LOW")
-    with pytest.raises(ValueError, match="Combatant list is full"):
+    with pytest.raises(ValueError, match="Combatant list is full, cannot add more combatants."):
         battle_model.prep_combatant(extra_meal)
 
 def test_clear_combatants(battle_model, sample_meal1):
@@ -96,6 +96,30 @@ def test_get_battle_score_different_difficulties(battle_model):
     
     assert high_score > med_score > low_score
 
+def test_get_battle_score_different_prices(battle_model):
+    """Test battle scores with different prices."""
+    high_price_meal = Meal(id=1, meal="Test", cuisine="Test", price=10.0, difficulty="HIGH")
+    med_price_meal = Meal(id=2, meal="Test", cuisine="Test", price=9.0, difficulty="HIGH")
+    low_price_meal = Meal(id=3, meal="Test", cuisine="Test", price=8.0, difficulty="HIGH")
+    
+    high_score = battle_model.get_battle_score(high_price_meal)
+    med_score = battle_model.get_battle_score(med_price_meal)
+    low_score = battle_model.get_battle_score(low_price_meal)
+    
+    assert high_score > med_score > low_score
+
+def test_get_battle_score_different_cuisines(battle_model):
+    """Test battle scores with different cuisines."""
+    high_cuisine_meal = Meal(id=1, meal="Test", cuisine="Japanese", price=10.0, difficulty="HIGH")
+    med_cuisine_meal = Meal(id=2, meal="Test", cuisine="French", price=10.0, difficulty="HIGH")
+    low_cuisine_meal = Meal(id=3, meal="Test", cuisine="Thai", price=10.0, difficulty="HIGH")
+    
+    high_score = battle_model.get_battle_score(high_cuisine_meal)
+    med_score = battle_model.get_battle_score(med_cuisine_meal)
+    low_score = battle_model.get_battle_score(low_cuisine_meal)
+    
+    assert high_score > med_score > low_score
+
 ##################################################
 # Battle Execution Test Cases
 ##################################################
@@ -103,7 +127,7 @@ def test_get_battle_score_different_difficulties(battle_model):
 def test_battle_not_enough_combatants(battle_model, sample_meal1):
     """Test error when starting battle with insufficient combatants."""
     battle_model.prep_combatant(sample_meal1)
-    with pytest.raises(ValueError, match="Two combatants must be prepped"):
+    with pytest.raises(ValueError, match="Two combatants must be prepped for a battle."):
         battle_model.battle()
 
 def test_battle_execution(battle_model, sample_meal1, sample_meal2, mock_random, mock_update_stats):
@@ -160,3 +184,17 @@ def test_prep_same_meal_twice(battle_model, sample_meal1):
     battle_model.prep_combatant(sample_meal1)
     battle_model.prep_combatant(sample_meal1)
     assert len(battle_model.combatants) == 2
+
+def test_prep_combatant_state(battle_model, sample_meal1, sample_meal2):
+    """Test that combatants list is correctly updated after adding combatants."""
+    
+    # Add the first combatant and verify the list contains only sample_meal1
+    battle_model.prep_combatant(sample_meal1)
+    assert len(battle_model.combatants) == 1
+    assert battle_model.combatants[0].meal == sample_meal1.meal
+
+    # Add the second combatant and verify the list now contains both sample_meal1 and sample_meal2
+    battle_model.prep_combatant(sample_meal2)
+    assert len(battle_model.combatants) == 2
+    assert battle_model.combatants[0].meal == sample_meal1.meal
+    assert battle_model.combatants[1].meal == sample_meal2.meal
