@@ -34,6 +34,17 @@ check_health() {
   fi
 }
 
+check_db() {
+  echo "Checking database connection..."
+  curl -s -X GET "$BASE_URL/db-check" | grep -q '"database_status": "healthy"'
+  if [ $? -eq 0 ]; then
+    echo "Database connection is healthy."
+  else
+    echo "Database check failed."
+    exit 1
+  fi
+}
+
 # Function to check the kitchen connection
 check_kitchen() {
   echo "Checking kitchen connection..."
