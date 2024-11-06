@@ -5,6 +5,7 @@ BASE_URL="http://localhost:5001/api"
 
 # Flag to control whether to echo JSON output
 ECHO_JSON=false
+echo "Starting smoke test..."
 
 # Parse command-line arguments
 while [ "$#" -gt 0 ]; do
@@ -14,7 +15,6 @@ while [ "$#" -gt 0 ]; do
   esac
   shift
 done
-
 
 ###############################################
 #
@@ -33,6 +33,7 @@ check_health() {
     exit 1
   fi
 }
+check_health
 
 check_db() {
   echo "Checking database connection..."
@@ -44,18 +45,7 @@ check_db() {
     exit 1
   fi
 }
-
-# Function to check the kitchen connection
-check_kitchen() {
-  echo "Checking kitchen connection..."
-  curl -s -X GET "$BASE_URL/kitchen-check" | grep -q '"kitchen_status": "healthy"'
-  if [ $? -eq 0 ]; then
-    echo "Kitchen connection is healthy."
-  else
-    echo "Kitchen check failed."
-    exit 1
-  fi
-}
+check_db
 
 
 ##########################################################
@@ -64,16 +54,19 @@ check_kitchen() {
 #
 ##########################################################
 
+# Function to create a meal
 create_meal() {
-  name=$1
-  ingredients=$2
-  preparation_time=$3
-  calories=$4
+  meal=$1
+  cuisine=$2
+  price=$3
+  difficulty=$4
 
-  echo "Adding meal ($name) to the kitchen..."
-  curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
-    -d "{\"name\":\"$name\", \"ingredients\":\"$ingredients\", \"preparation_time\":$preparation_time, \"calories\":$calories}" | grep -q '"status": "success"'
+  echo "Adding meal ($meal) to the kitchen..."
+  response=$(curl -s -X POST "$BASE_URL/create-meal" -H "Content-Type: application/json" \
+    -d "{\"meal\":\"$meal\", \"cuisine\":\"$cuisine\", \"price\":$price, \"difficulty\":\"$difficulty\"}")
 
+  # Check if the response contains the expected status
+  echo "$response" | grep -q '"status": "success"'
   if [ $? -eq 0 ]; then
     echo "Meal added successfully."
   else
@@ -158,7 +151,6 @@ get_random_meal() {
     exit 1
   fi
 }
-
 
 ############################################################
 #
@@ -264,3 +256,16 @@ end_battle_meal() {
     exit 1
   fi
 }
+
+############################################################
+#
+# Example function calls
+#
+############################################################
+
+# Run health checks
+check_health
+check_db
+
+
+
