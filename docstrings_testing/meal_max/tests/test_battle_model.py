@@ -132,7 +132,7 @@ def test_battle_not_enough_combatants(battle_model, sample_meal1):
 
 def test_battle_execution(battle_model, sample_meal1, sample_meal2, mock_random, mock_update_stats):
     """Test complete battle execution."""
-    mock_random.return_value = 0.3  # Set random number less than normalized delta
+    mock_random.return_value = 0.3
     
     battle_model.prep_combatant(sample_meal1)
     battle_model.prep_combatant(sample_meal2)
@@ -188,12 +188,10 @@ def test_prep_same_meal_twice(battle_model, sample_meal1):
 def test_prep_combatant_state(battle_model, sample_meal1, sample_meal2):
     """Test that combatants list is correctly updated after adding combatants."""
     
-    # Add the first combatant and verify the list contains only sample_meal1
     battle_model.prep_combatant(sample_meal1)
     assert len(battle_model.combatants) == 1
     assert battle_model.combatants[0].meal == sample_meal1.meal
 
-    # Add the second combatant and verify the list now contains both sample_meal1 and sample_meal2
     battle_model.prep_combatant(sample_meal2)
     assert len(battle_model.combatants) == 2
     assert battle_model.combatants[0].meal == sample_meal1.meal
